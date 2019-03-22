@@ -5,13 +5,12 @@ using namespace std;
 
 #define N 2
 #define M 2
-#define T 2
 #define max_iter 10000
 
 double func(vector<double> x){
-    //return (x[0]*x[0] + 100*x[1]*x[1]);
+    return (x[0]*x[0] + 100*x[1]*x[1]);
     //return (100*(x[1]-x[0]*x[0])*(x[1]-x[0]*x[0])+(x[0]-1)*(x[0]-1));
-    return (x[0]-1)*(x[0]-1)+ 2*(2*x[1]*x[1]-x[0])*(2*x[1]*x[1]-x[0]);
+    //return (x[0]-1)*(x[0]-1)+ 2*(2*x[1]*x[1]-x[0])*(2*x[1]*x[1]-x[0]);
 }
 
 bool comp(vector<double> a, vector<double> b){
@@ -54,7 +53,7 @@ void update(vector<vector<double>> &P,vector<int> &tcap,int T,int m,int iter,vec
         }
         
     }
-    if(Tmin>T||t<m)
+    if(Tmin>T||iter<m)
     {
         for(int i=0;i<m-1;i++)
         {
@@ -159,19 +158,19 @@ vector<double> RmES(){
 
         }
     
-
+    cout<<"x:"<<xbest[0]<<","<<xbest[1]<<" ";
     cout<<"fval:"<<func(xbest)<<endl;
-    for(int i=0;i<lambda;i++)
+    /*for(int i=0;i<lambda;i++)
     {
         cout<<"("<<x[i][0]<<","<<x[i][1]<<"):"<<func(x[i])<<" ";
     }
-    cout<<endl;
+    cout<<endl;*/
         sort(x.begin(),x.end(),comp);
-    for(int i=0;i<lambda;i++)
+    /*for(int i=0;i<lambda;i++)
     {
         cout<<"("<<x[i][0]<<","<<x[i][1]<<"):"<<func(x[i])<<" ";
     }
-    cout<<endl;
+    cout<<endl;*/
         for(int i = 0;i<mu;i++){
             F[t+1][i] = func(x[i]);
         }
@@ -191,7 +190,7 @@ vector<double> RmES(){
         cout<<p[t+1][n]<<" ";
     cout<<endl;*/
 
-
+	int T=N;
         update(P,tcap,T,M,t,p);
 
         find_rank(p,R,t,mu);
@@ -202,7 +201,7 @@ vector<double> RmES(){
         q /= mu;
 
         s[t+1] = (1-cs)*s[t] +cs*(q-qstar);
-        sigma[t+1] = sigma[t]*exp(s[t+1]/dsigma);cout<<sigma[t+1]<<endl;
+        sigma[t+1] = sigma[t]*exp(s[t+1]/dsigma);//cout<<sigma[t+1]<<endl;
     }
     return xbest;
 }
