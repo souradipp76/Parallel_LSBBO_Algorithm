@@ -71,20 +71,20 @@ bool comp(vector<double> a, vector<double> b){
 void find_rank(vector<vector<double>> F,vector<vector<double>> &R,int t,int mu){
     set<double> Funion;
     for(int i=0;i<mu;i++){
-        Funion.insert(F[t][i]);
-        Funion.insert(F[t+1][i]);
+        Funion.insert(F[t&1][i]);
+        Funion.insert(F[(t+1)&1][i]);
     }
 
     for(int i = 0;i<mu;i++){
         for(auto it = Funion.begin();it!=Funion.end();it++){
-            if(F[t][i] == *it){
-                R[t][i] = distance(Funion.begin(),it);
+            if(F[t&1][i] == *it){
+                R[t&1][i] = distance(Funion.begin(),it);
                 break;
             }
         }
         for(auto it = Funion.begin();it!=Funion.end();it++){
-            if(F[t+1][i] == *it){
-                R[t+1][i] = distance(Funion.begin(),it);
+            if(F[(t+1)&1][i] == *it){
+                R[(t+1)&1][i] = distance(Funion.begin(),it);
                 break;
             }
         }
@@ -124,21 +124,21 @@ void update(vector<vector<double>> &P,vector<int> &tcap,int T,int m,int iter,vec
     }
     tcap[m-1]=iter;
     for(int j=0;j<N;j++)
-        P[m-1][j]=p[iter][j];
+        P[m-1][j]=p[iter&1][j];
 }
 
 
 vector<double> RmES(){
     
-    vector<double> sigma(max_iter+1,0);
-    vector<vector<double>> m(max_iter+1,vector<double>(N,0));
-    vector<vector<double>> p(max_iter+1,vector<double>(N,0));
+    double sigma;
+    vector<vector<double>> m(2,vector<double>(N,0));
+    vector<vector<double>> p(2,vector<double>(N,0));
     vector<vector<double>> P(M,vector<double>(N,0));
     vector<int> tcap(M,0);
     vector<double> xbest(N,0);
-    vector<double> s(max_iter+1,0);
+    double s;
 
-    sigma[0]=20/3.0;
+    sigma=20/3.0;
     srand (time(NULL));
     for(int n=0;n<N;n++)
     {
@@ -168,12 +168,12 @@ vector<double> RmES(){
     double cc = 2.0/(N+7);
     double qstar = 0.3;
     double q = 0;
-    double dsigma = 1;
+    double dsigma = 10;
     double cs = 0.3;
 
     vector<vector<double>> x (lambda,vector<double>(N,0));
-    vector<vector<double>> R (max_iter+1,vector<double>(mu,0));
-    vector<vector<double>> F (max_iter+1,vector<double>(mu,0));
+    vector<vector<double>> R (2,vector<double>(mu,0));
+    vector<vector<double>> F (2,vector<double>(mu,0));
     double fm = func(m[0]);
     for(int i = 0;i<mu;i++){
         F[0][i] = fm;
@@ -197,7 +197,7 @@ vector<double> RmES(){
                     double r  = distribution(gen);
                     val+=  pow(sqrt(1-ccov),M-(j+1))*r*P[j][n];
                 }
-                x[i][n] = m[t][n] + sigma[t]*(pow(sqrt(1-ccov),M)*z[n] + sqrt(ccov)*val);
+                x[i][n] = m[t&1][n] + sigma*(pow(sqrt(1-ccov),M)*z[n] + sqrt(ccov)*val);
             }
             //cout<<endl;
             if(func(x[i]) < func(xbest)){
@@ -219,16 +219,16 @@ vector<double> RmES(){
 
         sort(x.begin(),x.end(),comp);
         for(int i = 0;i<mu;i++){
-            F[t+1][i] = func(x[i]);
+            F[(t+1)&1][i] = func(x[i]);
         }
 
     
         for(int n=0;n<N;n++){
-            m[t+1][n]=0;
+            m[(t+1)&1][n]=0;
             for(int i=0;i<mu;i++){
-                m[t+1][n] += w[i]*x[i][n];
+                m[(t+1)&1][n] += w[i]*x[i][n];
             } 
-            p[t+1][n] = (1-cc)*p[t][n] + sqrt(cc*(2-cc)*mueff)*(m[t+1][n] - m[t][n])/sigma[t];
+            p[(t+1)&1][n] = (1-cc)*p[t&1][n] + sqrt(cc*(2-cc)*mueff)*(m[(t+1)&1][n] - m[t&1][n])/sigma;
         }
 
 	    int T=N;
@@ -237,12 +237,12 @@ vector<double> RmES(){
         find_rank(p,R,t,mu);
         q=0;
         for(int i=0;i<mu;i++){
-            q += w[i]*(R[t][i]-R[t+1][i]);
+            q += w[i]*(R[t&1][i]-R[(t+1)&1][i]);
         }
         q /= mu;
 
-        s[t+1] = (1-cs)*s[t] +cs*(q-qstar);
-        sigma[t+1] = sigma[t]*exp(s[t+1]/dsigma);//cout<<sigma[t+1]<<endl;
+        s = (1-cs)*s +cs*(q-qstar);
+        sigma = sigma*exp(s/dsigma);//cout<<sigma[t+1]<<endl;
         t++;
     }
     return xbest;

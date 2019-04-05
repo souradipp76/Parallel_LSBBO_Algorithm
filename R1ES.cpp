@@ -3,13 +3,64 @@
 #include <random>
 using namespace std;
 
-#define N 2
-#define max_iter 10000
+#define N 100
+#define max_iter 1000
 
 double func(vector<double> x){
-    //return (x[0]*x[0] + 100*x[1]*x[1]);
-    //return (100*(x[1]-x[0]*x[0])*(x[1]-x[0]*x[0])+(x[0]-1)*(x[0]-1));
-    return (x[0]-1)*(x[0]-1)+ 2*(2*x[1]*x[1]-x[0])*(2*x[1]*x[1]-x[0]);
+    double res=0;
+    
+    // /////fEll(x)////
+    // for(int n = 0; n < N; n++)
+    // {
+    //     res+=(pow(10,6.0*(n/float(N)))*x[n]*x[n]);
+    // }
+    // ////
+
+    // ////fCig(x)/////
+    // res+=x[0]*x[0];
+    // for(int n = 0; n < N-1; n++)
+    // {
+    //     res+=1000000*(x[n+1]*x[n+1]);
+    // }
+    // /////
+
+    // /////fCtb(x)////
+    // res+=x[0]*x[0];
+    // for(int n = 0; n < N-2; n++)
+    // {
+    //     res+=10000*(x[n+1]*x[n+1]);
+    // }
+    // res+=1000000*x[N-1]*x[N-1];
+    // /////
+
+
+    // /////fTab(x)////
+    // res+=1000000*x[0]*x[0];
+    // for(int n = 0; n < N-1; n++)
+    // {
+    //     res+=(x[n+1]*x[n+1]);
+    // }
+    // /////
+
+    // /////fSch(x)////
+    // for(int n = 0; n < N; n++)
+    // {
+    // 	double temp=0;
+    // 	for(int j=0;j<n;j++)
+    //     	temp+=x[n]*x[n];
+    //     res+=temp*temp;
+    // }
+    // ////
+
+    /////fRos(x)////
+    for(int n = 0; n < N-1; n++)
+    {
+        res+=(100*(x[n+1]-x[n]*x[n])*(x[n+1]-x[n]*x[n])+(x[n]-1)*(x[n]-1));
+    }
+    ////
+
+
+    return res;
 }
 
 bool comp(vector<double> a, vector<double> b){
@@ -40,7 +91,7 @@ void find_rank(vector<vector<double>> F,vector<vector<double>> &R,int t,int mu){
 
 }
 
-vector<double> RmES(){
+vector<double> R1ES(){
     
     vector<double> sigma(max_iter+1,0);
     vector<vector<double>> m(max_iter+1,vector<double>(N,0));
@@ -52,16 +103,16 @@ vector<double> RmES(){
     srand (time(NULL));
     for(int n=0;n<N;n++)
     {
-	double fn = ((float)rand())/RAND_MAX;
-	float fr = 2*(fn-0.5);
-	m[0][n]= 10*fr;
-	xbest[n]=m[0][n];
-	cout<<xbest[n]<<" ";
+    	double fn = ((float)rand())/RAND_MAX;
+	    float fr = 2*(fn-0.5);
+	    m[0][n]= 10*fr;
+	    xbest[n]=m[0][n];
+	    //cout<<xbest[n]<<" ";
     }
-    cout<<endl;
+    //cout<<endl;
 
     int lambda = 4 + floor(3*log(N));//cout<<log(N)<<endl;
-    int mu = floor(lambda/2);
+    int mu = floor(lambda/2.0);
     vector<double> w(mu,0);
     double mueffdem = 0;
     for (int i = 1; i <= mu; i++){
@@ -78,7 +129,7 @@ vector<double> RmES(){
     double cc = 2.0/(N+7);
     double qstar = 0.3;
     double q = 0;
-    double dsigma = 1;
+    double dsigma = 1.5;
     double cs = 0.3;
 
     vector<vector<double>> x (lambda,vector<double>(N,0));
@@ -89,80 +140,75 @@ vector<double> RmES(){
         F[0][i] = fm;
     }
 
-    for (int t = 0; t < max_iter; t++){
+    int t=0;
+    while(t<max_iter&&func(xbest)>0.001){
         for(int i = 0; i<lambda; i++){
-	    std::random_device rd{};
+	        std::random_device rd{};
     	    std::mt19937 gen{rd()};
             default_random_engine generator;
             normal_distribution<double> distribution(0,1.0);
             //double r = distribution(generator);
             double r  = distribution(gen);//cout<<"r:"<<r<<endl;
-	    vector<double> z(N);
+	        vector<double> z(N);
             for(int n=0; n <N;n++){
                 //z[n] = distribution(generator);
-		z[n]=distribution(gen);//cout<<z[n];
+		        z[n]=distribution(gen);//cout<<z[n];
                 x[i][n] = m[t][n] + sigma[t]*(sqrt(1-ccov)*z[n] + sqrt(ccov)*r*p[t][n]);
             }
-	    //cout<<endl;
+	        //cout<<endl;
             if(func(x[i]) < func(xbest)){
                 for(int n=0; n<N;n++){
                     xbest[n] = x[i][n];
-		    //cout<<xbest[n];
+		            //cout<<xbest[n];
                 }
-		//cout<<endl;
+		        //cout<<endl;
             }
 
         }
 	
 
-	cout<<"fval:"<<func(xbest)<<endl;
-	for(int i=0;i<lambda;i++)
-	{
-	    cout<<"("<<x[i][0]<<","<<x[i][1]<<"):"<<func(x[i])<<" ";
-	}
-	cout<<endl;
-        sort(x.begin(),x.end(),comp);
-	for(int i=0;i<lambda;i++)
-	{
-	    cout<<"("<<x[i][0]<<","<<x[i][1]<<"):"<<func(x[i])<<" ";
-	}
-	cout<<endl;
+	cout<<"Iteration "<<t+1<<": x = (";
+    for(int n=0;n<N;n++)
+        cout<<xbest[n]<<" ";
+    cout<<")"<<endl;
+    cout<<"fval:"<<func(xbest)<<endl;
+    
+    sort(x.begin(),x.end(),comp);
+
         for(int i = 0;i<mu;i++){
             F[t+1][i] = func(x[i]);
         }
 
 	
         for(int n=0;n<N;n++){
+            m[t+1][n]=0;
             for(int i=0;i<mu;i++){
                 m[t+1][n] += w[i]*x[i][n];
             } 
-            p[t+1][n] = (1-cc)*p[t][n] + sqrt(cc*(2-cc)*mueff)*(m[t+1][n] - m[t][n])/dsigma;
+            p[t+1][n] = (1-cc)*p[t][n] + sqrt(cc*(2-cc)*mueff)*(m[t+1][n] - m[t][n])/sigma[t];
         }
-	/*cout<<"m=";
-	for(int n=0;n<N;n++)
-	    cout<<m[t+1][n]<<" ";
-	cout<<endl<<"p=";
-	for(int n=0;n<N;n++)
-	    cout<<p[t+1][n]<<" ";
-	cout<<endl;*/
 
         find_rank(p,R,t,mu);
-
+        q=0;
         for(int i=0;i<mu;i++){
             q += w[i]*(R[t][i]-R[t+1][i]);
         }
         q /= mu;
 
-        s[t+1] = (1-cs)*s[t] +cs*(q-qstar);cout<<s[t+1]<<endl;
-        sigma[t+1] = sigma[t]*exp(s[t+1]/dsigma);cout<<sigma[t+1]<<endl;
+        s[t+1] = (1-cs)*s[t] +cs*(q-qstar);//cout<<s[t+1]<<endl;
+        sigma[t+1] = sigma[t]*exp(s[t+1]/dsigma);//cout<<sigma[t+1]<<endl;
+        t++;
     }
     return xbest;
 }
 
 int main()
 {
-    vector<double> v = RmES();
-    cout<<v[0]<<" "<<v[1]<<endl;
+    vector<double> v = R1ES();
+    cout<<"Xopt = (";
+    for(int n=0;n<N;n++)
+        cout<<v[n]<<", ";
+    cout<<")"<<endl<<"Function Value: "<<func(v)<<endl;
     return 0;
 }
 
