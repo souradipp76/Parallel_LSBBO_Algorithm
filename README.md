@@ -5,8 +5,8 @@ The aim of this project is to implement both serial and parallel version of an E
 In this project, the proposed evolutionary strategy algorithm using sparse plus low rank model for large-scale black box optimization was implemented and was parallelized using the OpenMP API. The proposed algorithm consists of two methods - (i) Rank-One evolution strategy(R1-ES) which uses a single principle direction for optimization and its extended version (ii) Rank-m evolution strategy(Rm-ES) which uses multiple principle directions. Both of these algorithms were parallelized and their convergence and speedup were analysed w.r.t some critical parameters.  
 
 ## Prerequisites
-  * `GCC/G++ Compiler`(https://www.gcc.gnu.org)	
-  * `OpenMP` (https://www.opnemp.org/resources/openmp-compilers-tools)
+  * `GCC/G++ Compiler`(https://gcc.gnu.org)	
+  * `OpenMP` (https://www.openmp.org/resources/openmp-compilers-tools)
   
 ## Original Paper
 [Link to report](https://github.com/Souradip-sopho/Parallel_LSBBO_Algorithm/blob/master/paper.pdf)
