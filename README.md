@@ -9,10 +9,10 @@ In this project, the proposed evolutionary strategy algorithm using sparse plus 
   * `OpenMP` (https://www.openmp.org/resources/openmp-compilers-tools)
   
 ## Original Paper
-[Link to report](https://github.com/Souradip-sopho/Parallel_LSBBO_Algorithm/blob/master/paper.pdf)
+[Paper](https://github.com/Souradip-sopho/Parallel_LSBBO_Algorithm/blob/master/paper.pdf)
 
 ## Final Report & Results
-[Link to report](https://github.com/Souradip-sopho/Parallel_LSBBO_Algorithm/blob/master/report.pdf)
+[Report](https://github.com/Souradip-sopho/Parallel_LSBBO_Algorithm/blob/master/report.pdf)
 
 ## Development and contribution
 * Souradip Pal | [GitHub](https://github.com/Souradip-sopho) | [LinkedIn](https://www.linkedin.com/in/souradip-pal-a9693111b/)            
